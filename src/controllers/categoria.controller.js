@@ -1,3 +1,4 @@
+//importo el modelo
 const categoriaModel = require('../models/categoria.model');
 
 async function getAll(req, res){
@@ -10,7 +11,7 @@ async function get(req, res){
     const categoria = await categoriaModel.get(id);
     //validacion
     if (!categoria) {
-        res.status(404).send(`La categoria con el id=${id} no existe`);
+        res.status(404).send(`La categoria con el id= ${id} no existe`);
         return;
     }
     res.send(categoria);
@@ -42,7 +43,24 @@ async function remove(req, res){
 async function update(req, res){
     const id = req.params.id;
     const categoriaMod = req.body; //aca viene el objeto json mandado en el body por el cliente
+    const columnNames = await categoriaModel.getColumnsName();
+    
+    // Excluir el campo id_categoria de la validación
+    const columnsToValidate = columnNames.filter(column => column !== 'id_categoria');  
+
+    // Validar la estructura del objeto JSON
+    const atributes = Object.keys(categoriaMod); //Object.keys(categoriaMod) devuelve un array con las claves/atributos del objeto categoriaMod
+    
+    for (const column of columnsToValidate) {
+        //itero las columnas que se van a validar hasta que haya una incompatibilidad de atributos
+        if (!atributes.includes(column)) {
+            res.status(400).send('El cuerpo de la solicitud debe contener un objeto con las propiedades validas');
+            return;
+        }
+    }
+
     const result = await categoriaModel.update(id, categoriaMod);
+
     //validacion
     if(result <= 0){
         res.status(404).send(`La categoria no pudo ser modificada`);

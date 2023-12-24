@@ -48,6 +48,12 @@ async function update(id, categoriaMod){
     return rows.affectedRows;
 }
 
+async function getColumnsName(){
+    const db = await conexion;
+    const [rows] = await db.query('DESCRIBE categorias');
+    return rows.map(row => row.Field);
+}
+
 //exporto las funciones
 module.exports = {
     getAll,
@@ -55,4 +61,5 @@ module.exports = {
     insert,
     remove,
     update,
+    getColumnsName,
 };
