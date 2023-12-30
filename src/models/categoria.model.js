@@ -14,6 +14,11 @@ async function getAll(){
     return rows;
 }
 
+async function getAllWithFiltter(){
+    const db = await conexion;
+}
+
+
 async function get(id){
     const db = await conexion;
     const [[row], fields] = await db.query('SELECT * FROM categorias WHERE id_categoria = ?', [id]);
@@ -54,9 +59,11 @@ async function getColumnsName(){
     return rows.map(row => row.Field);
 }
 
+
 //exporto las funciones
 module.exports = {
     getAll,
+    getAllWithFiltter,
     get,
     insert,
     remove,
