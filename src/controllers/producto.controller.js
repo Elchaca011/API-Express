@@ -73,7 +73,7 @@ async function update(req, res){
         const result = await productoModel.update(id, productoMod);
         //validacion
         if(result <= 0){
-            res.status(404).send(`El productono pudo ser modificado`);
+            res.status(404).send(`El producto no pudo ser modificado`);
             return;
         }
         res.send(`se modifco el producto con el id = ${id}.`);

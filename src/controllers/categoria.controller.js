@@ -2,35 +2,28 @@
 const categoriaModel = require('../models/categoria.model');
 
 async function getAll(req, res){
-    const filter = req.query;
-    console.log(filter);
-    const field = Object.keys(filter);
+    const field = req.query.field; //aca viene el campo
+    const value = req.query.value  //aca viene el valor del campo
 
-    if(field.length === 0){ //si el query params viene vacio traigo todas las categorias
+
+    if(!field  && !value ){ //si los query params vienen vacios traigo todas las categorias
         const categorias = await categoriaModel.getAll(); //traigo todas las categorias
         res.send(categorias);
         return;
     }
 
-    const categoriaColumns = await categoriaModel.getColumnsName();
-
-    //validacion de campo existente
-    let flag = false;
-    for (const column of categoriaColumns) {
-        //si el campo coincide con alguno de los campos del objeto categoriaColums flag = true
-        if(field.includes(column)){
-            flag = true;
-        }
-    }
-
-    //si flag es true es proque el campo coincide con los campos de categorias de la db por ende se puede realizar el filtrado
-    if(flag){
-        res.send('aca va el listado filtrado'); //llamar al modelo y realizar la query!!!
+    const campos = await categoriaModel.getColumnsName(); //aca traigo todos los campos de la db para hacer la validacion
+    
+    if(!campos.includes(field)){ //si el campo que ingreso el usuario no es valido le mando el mesnaje
+        res.status(400).send('ingrese un campo valido!');
         return;
     }
-    
-    res.status(400).send('ingrese un campo valido para realizar el filtrado!');
 
+    const categoriasFiltradas = await categoriaModel.getAllFiltter(field, value); //aca traigo todas las categorias filtradas
+
+    console.log(categoriasFiltradas);
+
+    res.send(categoriasFiltradas);
 }
 
 async function get(req, res){
