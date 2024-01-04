@@ -2,8 +2,47 @@
 const productoModel = require('../models/producto.model');
 
 async function getAll(req, res){
-    const productos = await productoModel.getAll(); //traigo todas los productos
-    res.send(productos);
+    const field = req.query.field;
+    const value = req.query.value;
+
+    const page = parseInt(req.query.page) || 1; //representa el numero de paginas de que deseamos obtener 
+    const pageSize = parseInt(req.query.pageSize) || 5; //representa el numero de resultados por pagina
+
+    // Calcular el índice de inicio en base a la página y el tamaño de página
+    const startIndex = (page -1) * pageSize;
+
+    if(!field && !value){
+        const productos = await productoModel.getAll(pageSize, startIndex); //traigo todos los productos con paginacion
+        const response = {
+            data: productos,
+            pagination: {
+                page: page,
+                pageSize: pageSize,
+                totalItems: productos.length
+            },
+            message: productos.length > 0 ? 'Productos encontrados' : 'No hay mas productos.',
+        };
+        res.send(response);
+        return;
+    }
+
+    const campos = await productoModel.getColumnsName(); //obtengo los campos
+    console.log(campos);
+
+    if(!campos.includes(field)){
+        res.status(400).send('ingrese un campo valido');
+        return;
+    }
+
+    const productosFiltrados = await productoModel.getAllFilter(field, value);
+
+    if(productosFiltrados.length === 0){
+        res.status(400).send('ingrese un valor valido!');
+        return;
+    }
+
+    res.send(productosFiltrados);
+    
 }
 
 async function get(req, res){

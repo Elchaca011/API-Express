@@ -21,7 +21,10 @@ async function getAll(req, res){
 
     const categoriasFiltradas = await categoriaModel.getAllFiltter(field, value); //aca traigo todas las categorias filtradas
 
-    console.log(categoriasFiltradas);
+    if(categoriasFiltradas.length === 0){
+        res.status(400).send('ingrese un valor valido!');
+        return;
+    }
 
     res.send(categoriasFiltradas);
 }

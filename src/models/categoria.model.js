@@ -15,7 +15,6 @@ async function getAll(){
 }
 
 async function getAllFiltter(field, value){
-    console.log(value);
     const db = await conexion;
     const [categoriasFiltradas] = await db.query(`SELECT * FROM categorias WHERE ${field} = ?`, [value]);
     return categoriasFiltradas;

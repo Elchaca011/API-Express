@@ -9,10 +9,16 @@ const conexion = mysql.createConnection({
     database: 'db_tpe'
 });
 
-async function getAll(){
+async function getAll(pageSize, startIndex){
     const db = await conexion;
-    const [rows, fields] = await db.query('SELECT * FROM productos ');
+    const [rows, fields] = await db.query('SELECT * FROM productos LIMIT ? OFFSET ?' , [pageSize, startIndex]);
     return rows;
+}
+
+async function getAllFilter(field, value){
+    const db = await conexion;
+    const[productosFiltrados] = await db.query(`SELECT * FROM productos WHERE ${field} = ?`, [value]);
+    return productosFiltrados;
 }
 
 async function get(id){
@@ -58,6 +64,7 @@ async function getColumnsName(){
 //exporto las funciones
 module.exports = {
     getAll,
+    getAllFilter,
     get,
     getProductoByCategoria,
     insert,
